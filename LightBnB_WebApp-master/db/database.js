@@ -7,7 +7,7 @@ const Client = pg.Client;
 
 const config = {
   port: 5432,
- 
+  
 };
 
 const client = new Client(config);
@@ -85,9 +85,11 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
- 
+  const queryString = `SELECT * FROM properties LIMIT $1`;
+  const values = [limit];
+
   return client
-    .query(`SELECT * FROM properties LIMIT $1`, [limit])
+    .query(queryString, values)
     .then((result) => {
       console.log(result.rows);
       client.end();
