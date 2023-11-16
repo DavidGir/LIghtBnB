@@ -1,3 +1,6 @@
+// Populates process.env
+require('dotenv').config();
+
 const properties = require("./json/properties.json");
 const users = require("./json/users.json");
 
@@ -6,8 +9,11 @@ const pg = require("pg");
 const Client = pg.Client;
 
 const config = {
-  port: 5432,
-  
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME
 };
 
 const client = new Client(config);
