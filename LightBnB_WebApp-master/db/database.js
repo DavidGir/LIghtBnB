@@ -121,13 +121,14 @@ const getAllReservations = function(guest_id, limit = 10) {
   WHERE reservations.guest_id = $1
   GROUP BY reservations.id, properties.id, cost_per_night
   ORDER BY reservations.start_date
-  LIMIT $2`;
+  LIMIT $2
+  `;
   const values = [guest_id, limit];
 
   return client
     .query(queryString, values)
     .then((result) => {
-      console.log(result.rows);
+      // console.log(result.rows);
       return result.rows;
     })
     .catch((err) => {
@@ -144,14 +145,30 @@ const getAllReservations = function(guest_id, limit = 10) {
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
-  const queryString = `SELECT * FROM properties LIMIT $1`;
-  const values = [limit];
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating) as average_rating
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id
+  `;
+  const values = [];
+  // If user uses city filter option
+  if (options.city) {
+    values.push(`%${options.city}%`);
+    queryString += `WHERE city LIKE $${values.length} `;
+  }
+  // Add any query that comes after the WHERE clause
+  values.push(limit);
+  queryString += `
+  GROUP BY properties.id
+  ORDER BY cost_per_night
+  LIMIT $${values.length};
+  `;
+
+  console.log(queryString, values);
 
   return client
     .query(queryString, values)
     .then((result) => {
-      // console.log(result.rows);
-      // client.end();
       return result.rows;
     })
     .catch((err) => {
