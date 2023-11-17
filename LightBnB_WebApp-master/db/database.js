@@ -49,7 +49,7 @@ const getUserWithEmail = function(email) {
       if (result.rows.length === 0) {
         return null;
       }
-      client.end();
+      // client.end();
       // Return single user
       return result.rows [0];
     })
@@ -74,7 +74,7 @@ const getUserWithId = function(id) {
         console.log(`No user found with id: ${id}`);
         return null;
       }
-      client.end();
+      // client.end();
       return result.rows[0];
     })
     .catch((err) => {
@@ -89,7 +89,20 @@ const getUserWithId = function(id) {
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser = function(user) {
-  
+  const queryString = `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *`;
+  const values = [user.name, user.email, user.password];
+
+  return client
+    .query(queryString, values)
+    .then((result) => {
+      console.log(result.rows);
+      // client.end();
+      // Returns the newly added user
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
 };
 
 /// Reservations
@@ -118,8 +131,8 @@ const getAllProperties = function(options, limit = 10) {
   return client
     .query(queryString, values)
     .then((result) => {
-      console.log(result.rows);
-      client.end();
+      // console.log(result.rows);
+      // client.end();
       return result.rows;
     })
     .catch((err) => {
