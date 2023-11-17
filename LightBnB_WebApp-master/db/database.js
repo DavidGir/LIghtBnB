@@ -63,8 +63,24 @@ const getUserWithEmail = function(email) {
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithId = function (id) {
-  return Promise.resolve(users[id]);
+const getUserWithId = function(id) {
+  const queryString = `SELECT * FROM users WHERE id = $1;`;
+  const values = [id];
+
+  return client
+    .query(queryString, values)
+    .then((result) => {
+      if (result.rows.length === 0) {
+        console.log(`No user found with id: ${id}`);
+        return null;
+      }
+      client.end();
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+  // return Promise.resolve(users[id]);
 };
 
 /**
@@ -73,10 +89,7 @@ const getUserWithId = function (id) {
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser = function(user) {
-  const userId = Object.keys(users).length + 1;
-  user.id = userId;
-  users[userId] = user;
-  return Promise.resolve(user);
+  
 };
 
 /// Reservations
