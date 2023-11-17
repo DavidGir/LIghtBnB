@@ -156,6 +156,11 @@ const getAllProperties = function(options, limit = 10) {
     values.push(`%${options.city}%`);
     queryString += `WHERE city LIKE $${values.length} `;
   }
+  // If an owner_id is passed in, return properties belonging to that owner
+  if (options.owner_id) {
+    values.push(options.owner_id);
+    queryString += `WHERE owner_id = $${values.length} `;
+  }
   // Add any query that comes after the WHERE clause
   values.push(limit);
   queryString += `
