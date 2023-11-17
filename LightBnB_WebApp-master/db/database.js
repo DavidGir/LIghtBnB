@@ -175,7 +175,12 @@ const getAllProperties = function(options, limit = 10) {
     queryString += values.length === 1 ? 'WHERE ' : 'AND ';
     queryString += `cost_per_night <= $${values.length} `;
   }
-  
+  // If minimum filer has been inputted by the user
+  if (options.minimum_rating) {
+    values.push(options.minimum_rating);
+    queryString += values.length === 1 ? 'WHERE ' : 'AND ';
+    queryString += `rating >= $${values.length} `;
+  }
   // Add any query that comes after the WHERE clause
   values.push(limit);
   queryString += `
