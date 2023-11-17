@@ -189,7 +189,7 @@ const getAllProperties = function(options, limit = 10) {
   LIMIT $${values.length};
   `;
 
-  console.log(queryString, values);
+  // console.log(queryString, values);
 
   return client
     .query(queryString, values)
