@@ -161,6 +161,21 @@ const getAllProperties = function(options, limit = 10) {
     values.push(options.owner_id);
     queryString += `WHERE owner_id = $${values.length} `;
   }
+  // If minimum price filter has been inputted by user
+  if (options.minimum_price_per_night) {
+    //  Convert to cents for the db
+    values.push(options.minimum_price_per_night * 100);
+    // If the values array has more than one element, it means there's already a filter condition in the query (expression if false). Any additional conditions should be appended with the AND and with WHERE if array has only one element
+    queryString += values.length === 1 ? 'WHERE ' : 'AND ';
+    queryString += `cost_per_night >= $${values.length} `;
+  }
+  // If maximum price has been inputted by user
+  if (options.maximum_price_per_night) {
+    values.push(options.maximum_price_per_night * 100);
+    queryString += values.length === 1 ? 'WHERE ' : 'AND ';
+    queryString += `cost_per_night <= $${values.length} `;
+  }
+  
   // Add any query that comes after the WHERE clause
   values.push(limit);
   queryString += `
